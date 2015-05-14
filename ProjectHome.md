@@ -1,0 +1,1 @@
+S-DES is a very basic cryptographic algorithm for learning purpose.This is a tool implemented in python to check the encriptation.
