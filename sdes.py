@@ -1,61 +1,30 @@
-from claves import * #generacion de claves
 import operator
+from key import *
 
 def ip(ent):
-    """permutacion de bits IP
-    2 6 3 1 4 8 5 7
-    """
-    sal = []
+    bits = []
     for i in  [2, 6, 3, 1, 4, 8, 5, 7]:
-       sal.append(ent[i-1])
-    print "........IP: " + str(sal)   
-    return sal
+       bits.append(ent[i-1]) 
+    return bits
 
 def ip_1(ent):
-    """" permutacion de bits IP-1
-      IP-1
-    4 1 3 5 7 2 8 6"""
-    sal = []
+    bits = []
     for i in  [4, 1, 3, 5, 7, 2, 8, 6]:
-       sal.append(ent[i-1])
-    print "........IP-1: " + str(sal)   
-    return sal
+       bits.append(ent[i-1]) 
+    return bits
 
-def ep(ent):
-    """permutacion de expansion
-          E/P
-    4 1 2 3 2 3 4 1
-    """    
-    sal = []
+def ep(ent):    
+    bits = []
     for i in [4, 1, 2, 3, 2, 3, 4, 1]:
-        sal.append(ent[i-1])
-    print "........E/P: " + str(sal)           
-    return sal
+        bits.append(ent[i-1])        
+    return bits
 
 def xor(var1, var2):
     assert(len(var1)==len(var2))
-    sal = [operator.xor(var1[i],var2[i]) for i in range(len(var1))]
-    print "........xor: " + str(sal) 
-    return sal
+    bits = [operator.xor(var1[i],var2[i]) for i in range(len(var1))]
+    return bits
     
 def s(ent,tipo):
-    """   
-    S0 | 00 01 10 11
-    -----------------
-    00 | 01 00 11 10
-    01 | 11 10 01 00
-    10 | 00 10 01 11
-    11 | 11 01 11 10
-
-    S1 | 00 01 10 11
-    -----------------
-    00 | 00 01 10 11
-    01 | 10 00 01 11
-    10 | 11 00 01 00
-    11 | 10 01 00 11
-
-    El renglon lo conforman el primero y el cuarto bit. La columna el 2 y el 3. 
-    """
     assert(len(ent)==4)
     assert(tipo==0 or tipo==1)
     
@@ -98,70 +67,58 @@ def s(ent,tipo):
             s = [1,1],[0,0]
         if [ent[1],ent[2]] == [1,1]:
             s = [1,0],[1,1]
-    print "........S" + str(tipo) + ": " + str(s[tipo])
-    return s[tipo]  #S0
-
+    return s[tipo]
 
 def p4(ent):
-    """permutacion de bits P4
-    2 4 3 1
-    """
-    sal = []
+    bits = []
     for i in  [2, 4, 3, 1]:
-       sal.append(ent[i-1])
-    print "........P4: " + str(sal)   
-    return sal
+       bits.append(ent[i-1])
+    return bits
 
 def sw(ent):
-    """invierte el orden de los nibbles"""
     return ent[4:] + ent[:4]
-
     
 def fk(ent, k):
-    print "======================== Inicio de FK ============================="
     L = ent[:4]
     R = ent[4:]
-    print "........L: " + str(L) + "........R: " + str(R) 
-    parcial = ep(R) #expansion EP
-    parcial = xor(parcial,k) #exorea con la salida de EP con k
-    parcial = s(parcial[:4],0) + s(parcial[4:],1) #aplico las cajas s0 y s1 y concateno los resultados. 
-    parcial = p4(parcial) #aplica permutacion p4
-    parcial = xor(L, parcial) #exorea con L
-    print "........Fk: " + str(parcial + R)
+    parcial = ep(R)
+    parcial = xor(parcial,k)
+    parcial = s(parcial[:4],0) + s(parcial[4:],1)
+    parcial = p4(parcial)
+    parcial = xor(L, parcial)
     return parcial + R
     
- 
- 
 def sdes(M,K,sentido='cod'):
-    """algoritmo principal codifica"""
     if sentido == 'cod':
-    	k1,k2 = claves(K) #genero las claves para codificar
+    	k1, k2 = keys(K)
     elif sentido == 'dec':
-	k2,k1 = claves(K) #genero las claves para decodificar (orden inverso)
+	    k2, k1 = keys(K)
     sdes = ip(M) 
-    sdes = fk(sdes,k1) #primera ronda
+    sdes = fk(sdes,k1)
     sdes = sw(sdes)
-    sdes = fk(sdes,k2) #segunda ronda
+    sdes = fk(sdes,k2)
     sdes = ip_1(sdes)
-    #print "M = %s\nK = %s\nC = %s" % str(M),str(K),str(sdes)
-    return sdes
-    
+    return sdes 
+
+def cbc_mode(M, K, IV, mode="cod"):
+    y = []
+    for i, m in enumerate(M):
+        if i == 0:
+            y_i1 = IV
+        xor_res = xor(m, y_i1)
+        y_i1 = sdes(xor_res, K, 'cod')
+        y.append(y_i1)
+    return y
        
-if __name__ == '__main__':
-	
-	M = [1,0,1,1,1,1,0,1]
-	K = [1,0,1,0,0,0,0,0,1,0]
-	#K = ['k1','k2','k3','k4','k5','k6','k7','k8','k9','k10']
-	cod = sdes(M,K, 'cod')
-	print "Caracter codificado: " +  str(cod)
-	print "decoficandoooooooo"
-	dec = sdes(cod,K, 'dec')
-	print "Caracter decodificado: " +  str(dec)
-	if dec == M:
-		print "Son iguales"
-	else:
-		print "algo huele mal en dinamarca"
-
-
- 
- 
+if __name__ == '__main__':	
+    M = [[0, 1, 0, 0, 0, 0, 1, 1], [0, 1, 1, 1, 0, 0, 1, 0], [0, 1, 1, 1, 1, 0, 0, 1], 
+        [0, 1, 1, 1, 0, 0, 0, 0], [0, 1, 1, 1, 0, 1, 0, 0], [0, 1, 1, 0, 1, 1, 1, 1]]
+    M_error = [[0, 1, 0, 0, 0, 0, 1, 1], [1, 1, 1, 1, 0, 0, 1, 0], [0, 1, 1, 1, 1, 0, 0, 1], 
+        [0, 1, 1, 1, 0, 0, 0, 0], [0, 1, 1, 1, 0, 1, 0, 0], [0, 1, 1, 0, 1, 1, 1, 1]]
+    K = [1, 0, 1, 0, 0, 0, 0, 0, 1, 0]
+    IV = [1, 0, 0, 0, 1 , 0, 1, 1]
+    cbc_y = cbc_mode(M, K, IV, 'cod')
+    cbc_error_y = cbc_mode(M_error, K, IV, 'cod')
+    for i in range(len(cbc_y)):
+        print("Output R: ", cbc_y[i])
+        print("Output E: ", cbc_error_y[i])
