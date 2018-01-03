@@ -139,7 +139,7 @@ def cbc():
             print("Output E: ", cbc_error_y[i])
 
 def k1_to_k(K1):
-    return [k1[0], "a2", K1[5], K1[3], "a1", K1[7], K1[1], K1[4], K1[2], K1[6]]
+    return [K1[0], "a2", K1[5], K1[3], "a1", K1[7], K1[1], K1[4], K1[2], K1[6]]
 
 def k2_to_k(K2):
     return [K2[7], K2[3], K2[1], "a2", K2[5], K2[2], "a1", K2[0], K2[6], K2[4]]
@@ -158,7 +158,14 @@ def k_testing():
     K2 = [x+y for (x,y) in K2]
 
     print(K1)
+    print()
+    print("k1 to k: ")
+    print(k1_to_k(K1))
+    print()
     print(K2)
+    print()
+    print("k2 to k: ")
+    print(k2_to_k(K2))
 
 def brute_force():
     x = [1, 0, 0, 1, 0, 1, 1, 1]
