@@ -1,6 +1,7 @@
 import operator
 from key import *
 import itertools
+import numpy as np
 
 def ip(input):
     bits = []
@@ -148,14 +149,22 @@ def k_testing():
     S1_1 = [[0,1,1,0], [0,1,1,1], [1,0,0,0], [1,1,1,1]]
     R0 = [1,1,1,0,1,0,1,1]
     K1 = [prod for prod in itertools.product(S0_1, S1_1)]
+    K1_dot = np.dot(S0_1, S1_1)
+    K1_outer = np.outer(S0_1, S1_1)
 
     S0_2 = [[0,0,0,0], [0,1,0,1], [1,1,0,0], [1,0,1,1]]
     S1_2 = [[0,1,1,0], [0,1,1,1], [1,0,0,0], [1,1,1,1]]
     R1 = [0,1,0,1,0,1,0,1]
     K2 = [prod for prod in itertools.product(S0_2, S1_2)]
+    K2_dot = np.dot(S0_2, S1_2)
+    K2_outer = np.outer(S0_2, S1_2)
 
     print(K1)
+    print(K1_dot)
+    print(K1_outer)
     print(K2)
+    print(K2_dot)
+    print(K2_outer)
 
 def brute_force():
     x = [1, 0, 0, 1, 0, 1, 1, 1]
@@ -169,6 +178,7 @@ def brute_force():
             K = key
             break
     print("Finished!")
+    
 
 if __name__ == '__main__':	
     #cbc()
